@@ -1,6 +1,6 @@
 # V2C-Long
 
-This repository implements [V2C-Long](https://direct.mit.edu/imag/article/doi/10.1162/imag_a_00500/127971/V2C-Long-Longitudinal-Cortex-Reconstruction-with).
+This repository implements [V2C-Long](https://direct.mit.edu/imag/article/doi/10.1162/imag_a_00500/127971/V2C-Long-Longitudinal-Cortex-Reconstruction-with), a deep learning-based pipeline dedicated to consistent longitudinal cortical surface reconstruction.
 
 <p float="left">
 <img src="/media/v2c-long.png" width="600" /> 
