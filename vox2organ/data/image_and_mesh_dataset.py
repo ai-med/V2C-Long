@@ -322,15 +322,20 @@ class ImageAndMeshDataset(DatasetHandler, ABC):
         self.voxelized_meshes = None
 
         if self.sanity_checks or self.seg_ground_truth == "voxel_seg":
-            self.voxel_labels, _ = self._load_data3D_and_transform(
-                seg_file_name, is_label=True
-            )
-            self.voxel_labels = {scan_id:
-                combine_labels(vl, self.voxel_label_names, self.LabelMap)
-                for scan_id,vl in self.voxel_labels.items()
-            }
-
-        log.info("Done loading voxel labels")
+            try:
+                self.voxel_labels, _ = self._load_data3D_and_transform(
+                    seg_file_name, is_label=True
+                )
+                self.voxel_labels = [
+                    combine_labels(vl, self.voxel_label_names, self.LabelMap)
+                    for vl in self.voxel_labels
+                ]
+                log.info("Done loading voxel labels")
+            except FileNotFoundError:
+                self.voxel_labels = {
+                    k: torch.zeros_like(img).long() for k, img in self.images.items()
+                }
+                log.warning("Could not find voxel labels, ok for inference.")
 
 
         self.compressed_voxel_labels = False
@@ -836,9 +841,7 @@ class ImageAndMeshDataset(DatasetHandler, ABC):
                             process=False,
                         )
                     except Exception as e:
-                        # Insert a dummy if dataset is test split
-                        if self.mode != DataModes.TEST:
-                            raise e
+                        # Insert a dummy
                         mesh = trimesh.creation.icosahedron()
                         log.warning(f"No mesh for file {fn}/{mn}," " inserting dummy.")
                 # World --> voxel coordinates
